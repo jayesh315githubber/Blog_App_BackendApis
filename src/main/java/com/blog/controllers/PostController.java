@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.blog.payloads.ApiResponse;
 import com.blog.payloads.PostDto;
+import com.blog.payloads.PostResponse;
 import com.blog.services.PostService;
 
 @RestController
@@ -50,11 +51,24 @@ public class PostController {
 	}
 
 //	get all post 
-	@GetMapping("/posts")
-	public ResponseEntity<List<PostDto>> getAllPost() {
+	/*
+	 * @GetMapping("/posts") public ResponseEntity<List<PostDto>> getAllPost() {
+	 * List<PostDto> allPosts = this.postService.getAllPosts(); return new
+	 * ResponseEntity<List<PostDto>>(allPosts, HttpStatus.OK); }
+	 */
 
-		List<PostDto> allPosts = this.postService.getAllPosts();
-		return new ResponseEntity<List<PostDto>>(allPosts, HttpStatus.OK);
+//	get all post with pagination  	
+	/*
+	 * -> page size and page number -> sorting by any one field url ->
+	 * http://localhost:9090/posts?pageSize=5&PageNo=2&sortBy=title
+	 */
+
+	@GetMapping("/posts")
+	public ResponseEntity<PostResponse> getAllPost(
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+		PostResponse postResponse = this.postService.getAllPosts(pageNumber, pageSize);
+		return new ResponseEntity<PostResponse>(postResponse, HttpStatus.OK);
 	}
 
 //	get post details using id
