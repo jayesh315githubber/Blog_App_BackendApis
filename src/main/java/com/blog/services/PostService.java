@@ -19,7 +19,7 @@ public interface PostService {
 	List<PostDto> getAllPosts();
 
 //	get single Post
-	Post getPostById(Integer postId);
+	PostDto getPostById(Integer postId);
 
 //	get all post by category
 	List<PostDto> getAllPostByCategory(Integer categoryId);

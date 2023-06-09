@@ -19,6 +19,8 @@ public class PostDto {
 
 //	note - category_id and user_id can be get in the url as well as in the dto
 	
+	private Integer postId;
+	
 	@NotBlank
 	@Size(min = 4 , message ="min size of post title must be 4")
 	private String title;
