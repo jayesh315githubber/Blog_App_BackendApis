@@ -7,13 +7,19 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.blog.entities.Category;
 import com.blog.entities.Post;
 import com.blog.entities.User;
 import com.blog.exceptions.ResourceNotFoundException;
 import com.blog.payloads.PostDto;
+import com.blog.payloads.PostResponse;
 import com.blog.repositories.CategoryRepo;
 import com.blog.repositories.PostRepo;
 import com.blog.repositories.UserRepo;
@@ -75,13 +81,36 @@ public class PostServiceImpl implements PostService {
 		this.postRepo.delete(post);
 	}
 
-	@Override
-	public List<PostDto> getAllPosts() {
+	/*
+	 * @Override public List<PostDto> getAllPosts() {
+	 * 
+	 * List<Post> allPosts = this.postRepo.findAll(); List<PostDto> postDtos =
+	 * allPosts.stream().map((post) -> this.modelMapper.map(post, PostDto.class))
+	 * .collect(Collectors.toList()); return postDtos; }
+	 */
 
-		List<Post> allPosts = this.postRepo.findAll();
+	@Override
+	public PostResponse getAllPosts(Integer pageNumber, Integer pageSize) {
+	
+		Pageable p = PageRequest.of(pageNumber, pageSize);
+		
+		Page<Post> pagePosts = this.postRepo.findAll(p);
+		
+		List<Post> allPosts = pagePosts.getContent();
+	
 		List<PostDto> postDtos = allPosts.stream().map((post) -> this.modelMapper.map(post, PostDto.class))
 				.collect(Collectors.toList());
-		return postDtos;
+		
+		PostResponse postResponse = new  PostResponse();
+		
+		postResponse.setContent(postDtos);
+		postResponse.setPageNumber(pagePosts.getNumber());
+		postResponse.setPageSize(pagePosts.getSize());
+		postResponse.setTotalPages(pagePosts.getTotalPages());
+		postResponse.setTotalElements(pagePosts.getTotalElements());
+		postResponse.setLastPage(pagePosts.isLast());
+		
+		return postResponse;
 	}
 
 	@Override
