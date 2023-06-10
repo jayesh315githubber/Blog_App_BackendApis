@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,11 +151,15 @@ public class PostServiceImpl implements PostService {
 
 		return postDtos;
 	}
+	
+	 @Override
+	    public List<PostDto> searchPosts(String keyword) {
+	        List<Post> posts = this.postRepo.searchByTitle("%" + keyword + "%");
+	        List<PostDto> postDtos = posts.stream().map((post) -> this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+	        return postDtos;
+	    }
 
-	@Override
-	public List<PostDto> searchPost(String keyword) {
 
-		return null;
-	}
+	
 
 }
