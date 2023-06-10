@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,26 +91,29 @@ public class PostServiceImpl implements PostService {
 	 */
 
 	@Override
-	public PostResponse getAllPosts(Integer pageNumber, Integer pageSize) {
-	
-		Pageable p = PageRequest.of(pageNumber, pageSize);
-		
+	public PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection) {
+
+		Sort sort = (sortDirection.equalsIgnoreCase("asc")) ? Sort.by(sortBy).ascending()
+				: Sort.by(sortBy).descending();
+
+		Pageable p = PageRequest.of(pageNumber, pageSize, sort);
+
 		Page<Post> pagePosts = this.postRepo.findAll(p);
-		
+
 		List<Post> allPosts = pagePosts.getContent();
-	
+
 		List<PostDto> postDtos = allPosts.stream().map((post) -> this.modelMapper.map(post, PostDto.class))
 				.collect(Collectors.toList());
-		
-		PostResponse postResponse = new  PostResponse();
-		
+
+		PostResponse postResponse = new PostResponse();
+
 		postResponse.setContent(postDtos);
 		postResponse.setPageNumber(pagePosts.getNumber());
 		postResponse.setPageSize(pagePosts.getSize());
 		postResponse.setTotalPages(pagePosts.getTotalPages());
 		postResponse.setTotalElements(pagePosts.getTotalElements());
 		postResponse.setLastPage(pagePosts.isLast());
-		
+
 		return postResponse;
 	}
 
