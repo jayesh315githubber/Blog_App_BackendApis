@@ -12,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -26,7 +28,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Post {
-	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,5 +53,12 @@ public class Post {
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	private Set<Comment> comments = new HashSet<>();
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	private Set<Likes> likes = new HashSet<>();
+	
+//	@ManyToMany(cascade = CascadeType.ALL)
+//	@JoinTable(name = "Post_Likes", joinColumns = @JoinColumn(name = "postId"), inverseJoinColumns = @JoinColumn(name = "userId"))
+//	private Set<User> likes = new HashSet<>();
 
 }

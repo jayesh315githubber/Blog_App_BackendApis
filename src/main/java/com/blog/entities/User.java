@@ -55,6 +55,15 @@ public class User implements UserDetails {
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "id"))
 	private Set<Role> roles = new HashSet<>();
 
+//	one user can likes to many post
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+//	@ManyToMany
+//	@JoinTable(name = "Post_Likes", joinColumns = @JoinColumn(name = "postId"), inverseJoinColumns = @JoinColumn(name = "userId"))
+	private Set<Likes> likes = new HashSet<>();
+
+//	@ManyToMany(cascade = CascadeType.ALL,mappedBy = "user")
+//	private Set<Post> likes = new HashSet<>();
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
