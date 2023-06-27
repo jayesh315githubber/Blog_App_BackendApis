@@ -34,10 +34,10 @@ public class PostController {
 
 	@Autowired
 	private PostService postService;
-	
+
 	@Autowired
 	private FileService fileService;
-	
+
 	@Value("${project.image}")
 	private String path;
 
@@ -85,10 +85,10 @@ public class PostController {
 			@RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
 			@RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
 			@RequestParam(value = "sortDirection", defaultValue = AppConstants.SORT_DIR, required = false) String sortDirection) {
-		
+
 		PostResponse postResponse = this.postService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
 		return new ResponseEntity<PostResponse>(postResponse, HttpStatus.OK);
-		
+
 	}
 
 //	get post details using id
@@ -119,34 +119,47 @@ public class PostController {
 //	search post
 	@GetMapping("/posts/search/{keywords}")
 	public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable("keywords") String keywords) {
-		
+
 		List<PostDto> result = this.postService.searchPosts(keywords);
 		return new ResponseEntity<List<PostDto>>(result, HttpStatus.OK);
 	}
-	
+
 //	upload post image
 	@PostMapping("/post/image/upload/{postId}")
 	public ResponseEntity<PostDto> uploadPostImage(@RequestParam("image") MultipartFile image,
-			@PathVariable Integer postId) throws IOException  {
-		
+			@PathVariable Integer postId) throws IOException {
+
 		PostDto postDto = this.postService.getPostById(postId);
-		
+
 		String fileName = this.fileService.uploadImage(path, image);
 		postDto.setImageName(fileName);
 		PostDto updatePost = this.postService.updatePost(postDto, postId);
 		return new ResponseEntity<PostDto>(updatePost, HttpStatus.OK);
 	}
+
+	// method to serve files
+	@GetMapping(value = "/post/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+	public void downloadImage(@PathVariable("imageName") String imageName, HttpServletResponse response)
+			throws IOException {
+
+		InputStream resource = this.fileService.getResource(path, imageName);
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		StreamUtils.copy(resource, response.getOutputStream());
+
+	}
+
+	@GetMapping("/post/{postId}/likes")
+	public ApiResponse getTotalPostLikesCount(@PathVariable Integer postId) {
+
+		Integer count = this.postService.getAllPostLikesCount(postId);
+		return new ApiResponse("Total Likes : " + count, true);
+	}
 	
-	 //method to serve files
-    @GetMapping(value = "/post/image/{imageName}",produces = MediaType.IMAGE_JPEG_VALUE)
-    public void downloadImage(
-            @PathVariable("imageName") String imageName,
-            HttpServletResponse response
-    ) throws IOException {
+//	@GetMapping("/user/{userId}/post/{postId}/likes")
+//	public ApiResponse insetLikeOrUnlikeToPost(@PathVariable Integer userId, @PathVariable Integer postId)
+//	{
+//		String status = this.postService.insertLikeUnlikeToPost(postId, userId);
+//		return new ApiResponse("Status : "+status,true);
+//	}
 
-        InputStream resource = this.fileService.getResource(path, imageName);
-        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        StreamUtils.copy(resource,response.getOutputStream())   ;
-
-    }
 }

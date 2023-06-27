@@ -27,12 +27,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class User implements UserDetails {
 
 	@Id
@@ -56,14 +58,25 @@ public class User implements UserDetails {
 	private Set<Role> roles = new HashSet<>();
 
 //	one user can likes to many post
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-//	@ManyToMany
-//	@JoinTable(name = "Post_Likes", joinColumns = @JoinColumn(name = "postId"), inverseJoinColumns = @JoinColumn(name = "userId"))
-	private Set<Likes> likes = new HashSet<>();
+////	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+//	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "userswhoLike")
+////	@JoinTable(name = "Post_Likes", joinColumns = @JoinColumn(name = "postId"), inverseJoinColumns = @JoinColumn(name = "userId"))
+//	private Set<Post> postWhichLikes = new HashSet<>();
 
 //	@ManyToMany(cascade = CascadeType.ALL,mappedBy = "user")
 //	private Set<Post> likes = new HashSet<>();
+
+//	@ManyToMany(mappedBy = "userswhoLike", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//	private Set<Post> postWhichLikes;
 	
+	 @ManyToMany(cascade = { CascadeType.ALL })
+	    @JoinTable(
+	        name = "post_likes",
+	        joinColumns = { @JoinColumn(name = "user_id") },
+	        inverseJoinColumns = { @JoinColumn(name = "post_id") }
+	    )
+	    private Set<Post> likedPosts = new HashSet<>();
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
