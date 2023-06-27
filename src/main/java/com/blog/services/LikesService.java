@@ -9,13 +9,13 @@ import com.blog.payloads.LikesDto;
 
 public interface LikesService {
 
-	List<LikesDto> getLikesCountOnPost(Integer postId);
+	 Integer getLikesCountOnPost(Integer postId);
 
-	LikesDto insertLikeUnlikeOnPost(Integer postId, Integer userId);
+	boolean insertLikeOrUnlikeOnPost(Integer postId, Integer userId);
 	
 //	boolean isLikedByUser(Integer postId, Integer userId);
 	
-	
+//	LikesDto insertLikeToPost(Integer postId, Integer userId);
 	
 	
 	

@@ -6,6 +6,9 @@ import java.util.Set;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import com.blog.entities.Post;
+import com.blog.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -39,6 +42,7 @@ public class UserDto {
 	
 	private Set<RoleDto> roles = new HashSet<>();
 	
+	private Set<Post> postWhichLikes = new HashSet<>();
 	
 	@JsonIgnore
 	public String getPassword() {

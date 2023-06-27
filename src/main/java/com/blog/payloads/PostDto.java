@@ -7,13 +7,17 @@ import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.blog.entities.User;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class PostDto {
 
 //	note - category_id and user_id can be get in the url as well as in the dto
@@ -36,6 +40,8 @@ public class PostDto {
 	private CategoryDto category;
 	
 	private UserDto user;
+	
+	private Set<User> userswhoLike = new HashSet<>();
 	
 	private Set<CommentDto> comments=new HashSet<>();
 

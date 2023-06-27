@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,12 +22,14 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "post")
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Post {
 
 	@Id
@@ -54,11 +57,17 @@ public class Post {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	private Set<Comment> comments = new HashSet<>();
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	private Set<Likes> likes = new HashSet<>();
+//	@ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+//	@JoinTable(
+//			 name = "Post_Likes", joinColumns = @JoinColumn(name = "post_id",referencedColumnName = "postId"),
+//	         inverseJoinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"))
+//	private Set<User> userswhoLike = new HashSet<>();
 	
-//	@ManyToMany(cascade = CascadeType.ALL)
-//	@JoinTable(name = "Post_Likes", joinColumns = @JoinColumn(name = "postId"), inverseJoinColumns = @JoinColumn(name = "userId"))
-//	private Set<User> likes = new HashSet<>();
+	@ManyToMany(mappedBy = "likedPosts")
+    private Set<User> usersWhoLiked = new HashSet<>();   
+	
+	
+	
+	
 
 }
