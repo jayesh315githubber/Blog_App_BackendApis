@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.blog.entities.Category;
 import com.blog.entities.Post;
+import com.blog.entities.Tag;
 import com.blog.entities.User;
 
 public interface PostRepo extends JpaRepository<Post, Integer> {
@@ -22,5 +23,11 @@ public interface PostRepo extends JpaRepository<Post, Integer> {
 	List<Post> searchByTitle(@Param("key") String title);
 	
 	Post findByPostId(Integer postId);
+	
+//	List<Post> findByTagsIn(Set<Integer> tags);
+	
+//	List<Post> findByTagsIn(List<Integer> tags);
+	
+	List<Post> findByTagsIn(List<Tag> tags);
 	
 }

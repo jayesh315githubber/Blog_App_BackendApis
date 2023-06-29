@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.blog.entities.Tag;
 import com.blog.entities.User;
 
 import lombok.Getter;
@@ -41,8 +42,12 @@ public class PostDto {
 	
 	private UserDto user;
 	
-	private Set<User> userswhoLike = new HashSet<>();
+	private Set<UserDto> userswhoLike = new HashSet<>();
 	
 	private Set<CommentDto> comments=new HashSet<>();
+	
+	 private Set<TagDto> tags = new HashSet<>();
+	 
+	
 
 }

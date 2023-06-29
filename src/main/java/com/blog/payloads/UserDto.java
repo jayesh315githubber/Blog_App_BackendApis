@@ -42,7 +42,7 @@ public class UserDto {
 	
 	private Set<RoleDto> roles = new HashSet<>();
 	
-	private Set<Post> postWhichLikes = new HashSet<>();
+	private Set<PostDto> postWhichLikes = new HashSet<>();
 	
 	@JsonIgnore
 	public String getPassword() {

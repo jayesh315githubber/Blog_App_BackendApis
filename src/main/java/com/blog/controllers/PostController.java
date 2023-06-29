@@ -3,8 +3,10 @@ package com.blog.controllers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
+
 import org.hibernate.engine.jdbc.StreamUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.blog.config.AppConstants;
+import com.blog.entities.Post;
 import com.blog.payloads.ApiResponse;
 import com.blog.payloads.PostDto;
 import com.blog.payloads.PostResponse;
@@ -41,7 +45,7 @@ public class PostController {
 	@Value("${project.image}")
 	private String path;
 
-//	create
+//	create new post
 	@PostMapping("/user/{userId}/category/{categoryId}/posts")
 	public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, @PathVariable Integer userId,
 			@PathVariable Integer categoryId) {
@@ -50,7 +54,7 @@ public class PostController {
 		return new ResponseEntity<PostDto>(createPost, HttpStatus.CREATED);
 	}
 
-//	get by user
+// search posts by user
 	@GetMapping("/user/{userId}/posts")
 	public ResponseEntity<List<PostDto>> getPostsByUsers(@PathVariable Integer userId) {
 
@@ -58,7 +62,7 @@ public class PostController {
 		return new ResponseEntity<List<PostDto>>(posts, HttpStatus.OK);
 	}
 
-//	get by category
+//	get posts by category
 	@GetMapping("/category/{categoryId}/posts")
 	public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable Integer categoryId) {
 
@@ -148,18 +152,35 @@ public class PostController {
 
 	}
 
+//	get total likes of post
 	@GetMapping("/post/{postId}/likes")
 	public ApiResponse getTotalPostLikesCount(@PathVariable Integer postId) {
 
 		Integer count = this.postService.getAllPostLikesCount(postId);
 		return new ApiResponse("Total Likes : " + count, true);
 	}
+
+//	assigning the tags to post
+	@PostMapping("/post/{postId}/tags")
+	public ResponseEntity<String> assignTagsToPost(@PathVariable Integer postId, @RequestBody Set<String> tagNames) {
+		this.postService.assignTagsToPost(postId, tagNames);
+		return ResponseEntity.ok("Tags assigned successfully");
+	}
+
+//	search posts using tags
+	@GetMapping("/post/search")
+	public ResponseEntity<List<PostDto>> searchPostsByTags(@RequestParam("tags") Set<String> tagNames) {
+		List<PostDto> posts = postService.searchPostsByTags(tagNames);
+		return ResponseEntity.ok(posts);
+	}
 	
-//	@GetMapping("/user/{userId}/post/{postId}/likes")
-//	public ApiResponse insetLikeOrUnlikeToPost(@PathVariable Integer userId, @PathVariable Integer postId)
-//	{
-//		String status = this.postService.insertLikeUnlikeToPost(postId, userId);
-//		return new ApiResponse("Status : "+status,true);
-//	}
+//	remove tag from post
+	 @DeleteMapping("/post/{postId}/tags/{tagId}")
+	    public ResponseEntity<String> removeTagFromPost(@PathVariable Integer postId, @PathVariable Integer tagId) {
+	        this.postService.removeTagFromPost(postId, tagId);
+	        return ResponseEntity.ok("Tags removed successfully");
+	    }
+	 
+	 
 
 }
