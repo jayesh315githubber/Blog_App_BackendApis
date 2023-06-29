@@ -68,14 +68,18 @@ public class User implements UserDetails {
 
 //	@ManyToMany(mappedBy = "userswhoLike", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //	private Set<Post> postWhichLikes;
-	
-	 @ManyToMany(cascade = { CascadeType.ALL })
-	    @JoinTable(
-	        name = "post_likes",
-	        joinColumns = { @JoinColumn(name = "user_id") },
-	        inverseJoinColumns = { @JoinColumn(name = "post_id") }
-	    )
-	    private Set<Post> likedPosts = new HashSet<>();
+
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(name = "post_likes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "post_id") })
+	private Set<Post> likedPosts = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_followers", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "follower_id"))
+	private Set<User> followers = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
+	private Set<User> following = new HashSet<>();
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -66,7 +66,18 @@ public class Post {
                inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 	
+//	-------------------follow--------------------
 	
+	 @ManyToMany(fetch = FetchType.LAZY)
+	    @JoinTable(
+	            name = "user_followers",
+	            joinColumns = @JoinColumn(name = "user_id"),
+	            inverseJoinColumns = @JoinColumn(name = "follower_id")
+	    )
+	    private Set<User> followers = new HashSet<>();
+
+	    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
+	    private Set<User> following = new HashSet<>();
 	
 	
 
