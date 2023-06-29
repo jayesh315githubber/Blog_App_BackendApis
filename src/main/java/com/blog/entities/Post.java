@@ -57,14 +57,14 @@ public class Post {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	private Set<Comment> comments = new HashSet<>();
 
-//	@ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//	@JoinTable(
-//			 name = "Post_Likes", joinColumns = @JoinColumn(name = "post_id",referencedColumnName = "postId"),
-//	         inverseJoinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"))
-//	private Set<User> userswhoLike = new HashSet<>();
-	
 	@ManyToMany(mappedBy = "likedPosts")
     private Set<User> usersWhoLiked = new HashSet<>();   
+	
+	@ManyToMany
+    @JoinTable(name = "post_tags",
+               joinColumns = @JoinColumn(name = "post_id"),
+               inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 	
 	
 	

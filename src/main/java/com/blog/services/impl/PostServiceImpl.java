@@ -1,35 +1,36 @@
 package com.blog.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import com.blog.entities.Category;
 //import com.blog.entities.Likes;
 import com.blog.entities.Post;
+import com.blog.entities.Tag;
 import com.blog.entities.User;
 import com.blog.exceptions.ResourceNotFoundException;
 import com.blog.payloads.PostDto;
 import com.blog.payloads.PostResponse;
+import com.blog.payloads.TagDto;
 import com.blog.repositories.CategoryRepo;
 //import com.blog.repositories.LikesRepo;
 import com.blog.repositories.PostRepo;
+import com.blog.repositories.TagRepo;
 import com.blog.repositories.UserRepo;
 import com.blog.services.PostService;
+import com.blog.services.TagService;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -42,6 +43,12 @@ public class PostServiceImpl implements PostService {
 
 	@Autowired
 	private UserRepo userRepo;
+
+	@Autowired
+	private TagRepo tagRepo;
+
+	@Autowired
+	private TagService tagService;
 
 //	@Autowired
 //	private LikesRepo likeRepo;
@@ -173,6 +180,84 @@ public class PostServiceImpl implements PostService {
 		Post post = this.postRepo.findByPostId(postId);
 		Set<User> users = post.getUsersWhoLiked();
 		return users.size();
+	}
+
+	@Override
+	public void assignTagsToPost(Integer postId, Set<String> tagNames) {
+
+		Post post = this.postRepo.findById(postId)
+				.orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+
+		if (post == null) {
+			throw new IllegalArgumentException("Post not found");
+		}
+
+		// Fetch or create the tags based on tag names
+		Set<Tag> tags = new HashSet<>();
+
+		for (String tagName : tagNames) {
+			Tag tag = this.tagRepo.findByName(tagName);
+
+			// If the tag doesn't exist, create a new one
+			if (tag == null) {
+				tag = new Tag();
+				tag.setName(tagName);
+				this.tagRepo.save(tag);
+//				this.postRepo.save(tab);
+				TagDto tagDto = this.modelMapper.map(tag, TagDto.class);
+				this.tagService.createNewTag(tagDto);
+			}
+			tags.add(tag);
+		}
+		// Assign the tags to the post
+		post.setTags(tags);
+		// Save the updated post to the database
+		this.postRepo.save(post);
+		System.out.println(post);
+	}
+
+	public List<PostDto> searchPostsByTags(Set<String> tagNames) {
+		// Fetch the tags based on tag names
+		System.out.println("tagNames : " + tagNames);
+//		List<Tag> tags = this.tagRepo.findByNameIn(tagNames);
+
+		List<Tag> tags = new ArrayList<Tag>();
+
+		for (String tagName : tagNames) {
+			System.out.println("iterate : " + tagName);
+			Tag tag = this.tagRepo.findByName(tagName);
+			System.out.println("Tag : " + tag);
+			tags.add(tag);
+		}
+		System.out.println("List : " + tags);
+		Set<Integer> tagIds = tags.stream().map(Tag::getId).collect(Collectors.toSet());
+
+		List<Integer> tagIdsList = tagIds.stream().collect(Collectors.toList());
+
+		System.out.println("TagIds : " + tagIds);
+		// Search for posts by tags
+//		return this.postRepo.findByTagsIn(tagIdsList);
+//		 return this.postRepo.findAllByTags_IdIn(tagIds);
+//		 return this.postRepo.findByTagsIn(tags);
+		List<Post> findByTagsIn = this.postRepo.findByTagsIn(tags);
+		System.out.println(findByTagsIn);
+
+		Set<Post> set = new HashSet<>(findByTagsIn);
+		System.out.println("==============================");
+		System.out.println(set);
+		List<PostDto> postDtos = set.stream().map((post) -> this.modelMapper.map(post, PostDto.class))
+				.collect(Collectors.toList());
+		return postDtos;
+	}
+
+	@Override
+	public void removeTagFromPost(Integer postId, Integer tagId) {
+
+		Post post = this.postRepo.findById(postId)
+				.orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+		Tag tag = this.tagRepo.findById(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag", "tag id", tagId));
+		post.getTags().remove(tag);
+		this.postRepo.save(post);
 	}
 
 //	@Override

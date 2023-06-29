@@ -1,8 +1,10 @@
 package com.blog.services;
 
 import java.util.List;
+import java.util.Set;
 
 import com.blog.entities.Post;
+import com.blog.entities.Tag;
 import com.blog.payloads.PostDto;
 import com.blog.payloads.PostResponse;
 
@@ -19,7 +21,7 @@ public interface PostService {
 
 //	get All Posts
 //	List<PostDto> getAllPosts();
-	PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy,String sortDirection);
+	PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDirection);
 
 //	get single Post
 	PostDto getPostById(Integer postId);
@@ -32,9 +34,15 @@ public interface PostService {
 
 //	search posts
 	List<PostDto> searchPosts(String keyword);
-	
+
 	Integer getAllPostLikesCount(Integer postId);
-	
+
 //	String insertLikeUnlikeToPost(Integer postId, Integer userId);
+
+	void assignTagsToPost(Integer postId, Set<String> tagName);
+
+	List<PostDto> searchPostsByTags(Set<String> tagNames);
+
+	void removeTagFromPost(Integer postId, Integer tagId);
 
 }
