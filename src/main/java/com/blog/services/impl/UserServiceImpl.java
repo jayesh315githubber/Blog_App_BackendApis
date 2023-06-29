@@ -1,11 +1,15 @@
 package com.blog.services.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.blog.config.AppConstants;
 import com.blog.entities.Role;
 import com.blog.entities.User;
@@ -119,6 +123,48 @@ public class UserServiceImpl implements UserService {
 		User newUser = this.userRepo.save(user);
 
 		return this.modelMapper.map(newUser, UserDto.class);
+	}
+
+	public void followUser(Integer userId, Integer followerId) {
+		User user = this.userRepo.findById(userId).orElseThrow();
+		User follower = this.userRepo.findById(followerId).orElseThrow();
+
+		user.getFollowers().add(follower);
+		follower.getFollowing().add(user);
+
+		this.userRepo.save(user);
+		this.userRepo.save(follower);
+	}
+
+	@Override
+	public void unfollowUser(Integer userId, Integer followerId) {
+
+		User user = this.userRepo.findById(userId).orElseThrow();
+		User follower = this.userRepo.findById(followerId).orElseThrow(); // follower means login user
+
+		user.getFollowers().remove(follower);
+		this.userRepo.save(user);
+	}
+
+	@Override
+	public Set<UserDto> getFollowers(Integer userId) {
+
+		User user = this.userRepo.findById(userId).orElseThrow();
+
+		Set<User> followers = user.getFollowers();
+
+		Set<UserDto> userDto = followers.stream().map(u -> this.userToDto(u)).collect(Collectors.toSet());
+
+//		Set<UserDto> userDto = new HashSet<>(userDtoslist);
+		return userDto;
+	}
+
+	@Override
+	public Set<UserDto> getFollowingList(Integer userId) {
+		User user = this.userRepo.findById(userId).orElseThrow();
+		Set<User> followingList = user.getFollowing();
+		Set<UserDto> userDto = followingList.stream().map(u -> this.userToDto(u)).collect(Collectors.toSet());
+		return userDto;
 	}
 
 }

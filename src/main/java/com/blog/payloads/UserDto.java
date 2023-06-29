@@ -14,13 +14,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter; 
+import lombok.Setter;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class UserDto {
-	
+
 	private int id;
 
 	@NotEmpty
@@ -34,26 +34,27 @@ public class UserDto {
 	@NotEmpty
 	@Size(min = 3, max = 10, message = "Password must be min of 3 chars and max of 10 chars !!")
 
-
 	private String password;
 
 	@NotEmpty
 	private String about;
-	
+
 	private Set<RoleDto> roles = new HashSet<>();
-	
+
 	private Set<PostDto> postWhichLikes = new HashSet<>();
-	
+
+//	private Set<UserDto> followers = new HashSet<>();
+
+//	private Set<UserDto> following = new HashSet<>();
+
 	@JsonIgnore
 	public String getPassword() {
 		return this.password;
 	}
-	
+
 	@JsonProperty
 	public void setPassword(String password) {
-		this.password=password;
+		this.password = password;
 	}
-
-	
 
 }
